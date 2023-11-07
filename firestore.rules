@@ -1,0 +1,21 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+  	function isAuth() {
+    	return request.auth != null && request.auth.uid != null;
+    }
+    function isSuperAdmin() {
+    	return isAuth() && request.auth.token.superAdmin;
+    }
+
+    match /test/{eventId} {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

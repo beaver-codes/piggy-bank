@@ -1,0 +1,51 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "emulators",
+			"problemMatcher": [],
+			"label": "Emulators",
+		},
+		{
+			"type": "shell",
+			"label": "Frontend",
+			"command": "npm run start-emulators",
+			"problemMatcher": []
+		},
+		{
+			"type": "npm",
+			"path": "functions",
+			"script": "build:watch",
+			"problemMatcher": [],
+			"label": "Functions",
+		},
+		{
+			"type": "shell",
+			"command": "until lsof -Pi :9099 -sTCP:LISTEN; do echo \"Testing ... \" ;sleep 2; done",
+			"problemMatcher": [],
+			"label": "Wait",
+		},
+		{
+			"type": "shell",
+			"command": "cd scripts && ./initEmulators.js",
+			"problemMatcher": [],
+			"label": "InitEmulators",
+			"dependsOn": [
+				"Wait"
+			],
+		},
+		{
+			"type": "shell",
+			"command": "echo Hello",
+			"problemMatcher": [],
+			"label": "Dev-env",
+			"dependsOn": [
+				"Emulators",
+				"Frontend",
+				"Functions",
+				"InitEmulators",
+			],
+		},
+	]
+}

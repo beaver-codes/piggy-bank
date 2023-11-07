@@ -1,0 +1,27 @@
+@import "variables";
+
+@import "../../node_modules/bootstrap/scss/bootstrap";
+
+@import "bootswatch";
+
+body,
+html,
+#root {
+    height: 100%;
+    min-height: 100vh;
+}
+
+#root {
+    display: flex;
+    flex-direction: column;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.text-bold {
+    font-weight: bold;
+}
