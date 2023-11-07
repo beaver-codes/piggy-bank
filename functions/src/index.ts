@@ -12,7 +12,6 @@ setGlobalOptions({ region });
 
 export const testFunction = onRequest({ region, cors: true }, (_req, _res) => {
     return apiWrapper(_req, _res, async (req, res) => {
-
         res.send({ success: true });
     });
 });
