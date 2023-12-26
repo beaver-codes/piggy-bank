@@ -17,7 +17,7 @@ git remote add origin <new-origin>
 
 * Change [manifest.json](./public/manifest.json)
  
-* Firebase init (choose hosting) 
+* Firebase init (choose hosting, and as website folder - `build`) 
 ```
 firebase init
 ```
