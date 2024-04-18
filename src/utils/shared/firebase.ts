@@ -15,7 +15,7 @@ export function fromFirebaseDoc<Type>(doc: any): Type {
     return convertedData;
 }
 
-const convertData = (value: any): any => {
+export const convertData = (value: any): any => {
     if (!value) {
         return value;
     }
@@ -32,9 +32,17 @@ const convertData = (value: any): any => {
         return value.toDate();
     }
 
+    if (value._seconds) {
+        return new Date(value._seconds * 1000);
+    }
+
     const convertedData: any = {};
     for (const key of Object.keys(value)) {
-        convertedData[key] = convertData(value[key]);
+        if (key.endsWith('At')) {
+            convertedData[key] = new Date(convertData(value[key]));
+        } else {
+            convertedData[key] = convertData(value[key]);
+        }
     }
 
     return convertedData;
