@@ -13,6 +13,14 @@ git remote add origin <new-origin>
 
 * Create Firebase project
 
+* Add Web App (with Hosting)
+
+* Add Firestore
+
+* Add Auth (you might need to add Google Auth too so you can in Project Settings change public facing name)
+
+* Upgrade to Blaze plan
+
 * Change [index.htlm](./public/index.html)
 
 * Change [manifest.json](./public/manifest.json)
@@ -23,3 +31,5 @@ firebase init
 ```
 
 * Update project id in [initEmulators.js](./scripts/initEmulators.js)
+
+* Update [firebaseConfig.ts](./src/utils/firebaseConfig.ts)
