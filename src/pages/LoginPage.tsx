@@ -58,13 +58,16 @@ export const LoginPage: FC<IProps> = (props) => {
         </Form>
     }
     return (
-        <div className='h-100 center'>
-            <div className='border'>
-                <div className='bg-primary'>
-                    <h4 className='text-center text-light p-4'>🎯 {texts.brand}</h4>
+
+        <div className='center flex-1'>
+            <div className='d-flex border rounded flex-1 m-3' style={{ minHeight: 600, maxWidth: 1200 }}>
+                <div className='col-md-6 bg-black text-white p-3 d-none d-md-flex'>
+                    <h3 className='text-white'>{texts.brand}</h3>
+
+                    <p className='text-white mt-auto mb-3'>{texts.description}</p>
                 </div>
 
-                <div className='p-3'>
+                <div className='col-md-6 flex-1 py-3 center'>
                     {renderSigninForm()}
                 </div>
             </div>
