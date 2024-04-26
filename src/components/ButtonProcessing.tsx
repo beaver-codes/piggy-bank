@@ -2,18 +2,21 @@ import React, { FC } from 'react'
 import { Button, ButtonProps, Spinner } from 'react-bootstrap'
 
 interface IProps {
-    processing: boolean
+    processing?: boolean
+    icon?: string
 }
 
-/**
-* @author
-* @function @ButtonProcessing
-**/
+export const AdvancedButton: FC<IProps & ButtonProps> = ({ children, processing, disabled, icon, ...rest }) => {
+    let prefix = null;
+    if (processing) {
+        prefix = <Spinner size='sm' className='me-2' />
+    } else if (icon) {
+        prefix = <i className={`bi ${icon} me-2`} />
+    }
 
-export const ButtonProcessing: FC<IProps & ButtonProps> = ({ children, processing, disabled, ...rest }) => {
     return (
         <Button {...rest} disabled={processing || disabled}>
-            <div className='center'>{processing && <Spinner size='sm' className='me-2' />} {children}</div>
+            <div className='center'>{prefix} {children}</div>
         </Button>
     )
 }

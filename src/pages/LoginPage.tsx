@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { LOCAL_STORAGE_KEYS, QUERY_PARAMS } from '../utils/shared/constants';
 import { sendSignInLinkToEmail } from 'firebase/auth';
 import { useAuth } from 'reactfire';
-import { ButtonProcessing } from '../components/ButtonProcessing';
+import { AdvancedButton } from '../components/AdvancedButton';
 import { texts } from '../utils/texts';
 
 interface IProps { }
@@ -52,7 +52,7 @@ export const LoginPage: FC<IProps> = (props) => {
                 <Form.Label>{texts.emailAddress}</Form.Label>
                 <Form.Control type="email" placeholder={texts.enterEmail} {...register('email')} />
                 <div className='d-flex justify-content-end'>
-                    <ButtonProcessing processing={processing} className='mt-3' variant="primary" type="submit" disabled={!hasEmail}>{texts.login}</ButtonProcessing>
+                    <AdvancedButton processing={processing} className='mt-3' variant="primary" type="submit" disabled={!hasEmail}>{texts.login}</AdvancedButton>
                 </div>
             </Form.Group>
         </Form>
