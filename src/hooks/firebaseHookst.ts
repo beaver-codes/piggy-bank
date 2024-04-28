@@ -27,7 +27,8 @@ export const useFirebaseQuery = <T>(path: string, ...queryConstraints: QueryCons
             const result = fromFirebaseDocs<T>(snap.docs);
             setDocuments(result)
         });
-    }, [path, firestore, queryConstraints]);
+        // eslint-disable-next-line
+    }, [path, firestore]);
 
     return [documents, setDocuments]
 }
