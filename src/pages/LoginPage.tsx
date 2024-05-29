@@ -6,6 +6,7 @@ import { sendSignInLinkToEmail } from 'firebase/auth';
 import { useAuth } from 'reactfire';
 import { AdvancedButton } from '../components/AdvancedButton';
 import { texts } from '../utils/texts';
+import { addQueryParam } from '../hooks/useQueryParams';
 
 interface IProps { }
 
@@ -28,7 +29,8 @@ export const LoginPage: FC<IProps> = (props) => {
     const handleLogin = async (data: Inputs) => {
         setProcessing(true);
 
-        const url = window.location.href + `?${QUERY_PARAMS.EMAIL_SIGNIN_FINISHED}=true`;
+        const params = addQueryParam(QUERY_PARAMS.EMAIL_SIGNIN_FINISHED, 'true');
+        const url = window.location.origin + window.location.pathname + '?' + params;
         window.localStorage.setItem(LOCAL_STORAGE_KEYS.MAGIC_LINK_EMAIL, data.email);
         await sendSignInLinkToEmail(auth, data.email, {
             url,

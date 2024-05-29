@@ -12,5 +12,11 @@ const useQueryParam = () => {
     return parseQueryParam();
 }
 
+export const addQueryParam = (key: string, value: string) => {
+    const search = window.location.search;
+    const urlParams = new URLSearchParams(search);
+    urlParams.set(key, value);
+    return urlParams.toString();
+}
 
 export default useQueryParam;
