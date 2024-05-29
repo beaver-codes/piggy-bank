@@ -18,7 +18,13 @@ export const apiWrapper = (request: functions.https.Request,
                     return;
                 }
             }
-            functions.logger.error('Error:', error);
+
+            if (error?.response) {
+                functions.logger.error(error?.message, error?.response.data);
+            } else {
+                functions.logger.error('Custom error:', error);
+            }
+
             response.status(500).send(error);
         }).finally(() => {
             resolve();
