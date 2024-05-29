@@ -25,7 +25,7 @@ export const apiWrapper = (request: functions.https.Request,
                 functions.logger.error('Custom error:', error);
             }
 
-            response.status(500).send(error);
+            response.status(500).send(msg);
         }).finally(() => {
             resolve();
         });
