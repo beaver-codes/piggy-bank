@@ -6,6 +6,8 @@ import useQueryParam from '../hooks/useQueryParams';
 import { LOCAL_STORAGE_KEYS } from '../utils/shared/constants';
 import { signInWithEmailLink, signOut } from 'firebase/auth';
 import { Header } from './Header';
+import { LoginEmailLinkConfirmPage } from '../pages/LoginEmailLinkConfirmPage';
+import { toast } from 'react-toastify';
 
 interface IProps {
     children: ReactNode
@@ -22,32 +24,41 @@ export const PrivateRoute: FC<IProps> = (props) => {
     const auth = useAuth();
 
     useEffect(() => {
-        if (!emailSigningFinished) {
+        if (!emailSigningFinished || signInCheckResult?.signedIn) {
             return;
         }
         const email = window.localStorage.getItem(LOCAL_STORAGE_KEYS.MAGIC_LINK_EMAIL);
-        console.log('email', email);
-
         if (!email) {
-            throw Error("No email found");
+            return;
         }
 
-        signInWithEmailLink(auth, email).catch(e => console.error('Somthing brokne', e));
-    }, [emailSigningFinished, auth])
+        signInWithEmailLink(auth, email).catch(e => {
+            console.error('Somthing brokne', e)
+        });
+    }, [emailSigningFinished, auth, signInCheckResult?.signedIn])
+
+    const handleLinkEmailConfirm = async (email: string) => {
+        signInWithEmailLink(auth, email).catch(e => {
+            console.error('Somthing brokne', e)
+            toast.error('Failed to match the email');
+        });
+    };
 
     if (status === 'loading') {
         return <div className='h-100 center'><Spinner /></div>
     }
 
-    if (signInCheckResult.signedIn === false) {
+
+    if (signInCheckResult?.signedIn === false) {
+        if (emailSigningFinished) {
+            return <LoginEmailLinkConfirmPage onSubmit={handleLinkEmailConfirm} />
+        }
         return <LoginPage />
     }
 
     const handleLogout = () => {
         signOut(auth);
     }
-
-
 
     return (
         <div>
