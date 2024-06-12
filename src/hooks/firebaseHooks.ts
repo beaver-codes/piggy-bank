@@ -27,20 +27,32 @@ export const useFirebaseDoc = <T>(path: string): [T | null, Function, boolean] =
 }
 
 export const useFirebaseQuery = <T>(path: string, ...queryConstraints: QueryConstraint[]): [T[], Function, boolean] => {
+    return useFirebaseQueryOptions<T>(path, { queryConstraints });
+}
+
+interface QueryOptions {
+    queryConstraints: QueryConstraint[],
+    skip?: boolean
+}
+export const useFirebaseQueryOptions = <T>(path: string, options: QueryOptions): [T[], Function, boolean] => {
     const [state, setState] = useState<{ documents: T[], loaded: boolean }>({ documents: [], loaded: false })
     const firestore = useFirestore();
 
     useEffect(() => {
-        const q = query(collection(firestore, path), ...queryConstraints)
+        if (options.skip) {
+            return;
+        }
+        const q = query(collection(firestore, path), ...options.queryConstraints)
         return onSnapshot(q, snap => {
             const result = fromFirebaseDocs<T>(snap.docs);
             setState({ documents: result, loaded: true })
         });
         // eslint-disable-next-line
-    }, [path, firestore]);
+    }, [path, firestore, options.skip]);
 
     return [
         state.documents,
         (newDocuments: T[]) => setState({ documents: newDocuments, loaded: true }),
         state.loaded]
 }
+
