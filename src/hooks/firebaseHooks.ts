@@ -32,6 +32,7 @@ export const useFirebaseQuery = <T>(path: string, ...queryConstraints: QueryCons
 
 interface QueryOptions {
     queryConstraints: QueryConstraint[],
+    dependencies?: any[],
     skip?: boolean
 }
 export const useFirebaseQueryOptions = <T>(path: string, options: QueryOptions): [T[], Function, boolean] => {
@@ -39,6 +40,7 @@ export const useFirebaseQueryOptions = <T>(path: string, options: QueryOptions):
     const firestore = useFirestore();
 
     useEffect(() => {
+        console.log('refetching')
         if (options.skip) {
             return;
         }
@@ -48,7 +50,7 @@ export const useFirebaseQueryOptions = <T>(path: string, options: QueryOptions):
             setState({ documents: result, loaded: true })
         });
         // eslint-disable-next-line
-    }, [path, firestore, options.skip]);
+    }, [path, firestore, options.skip, ...(options.dependencies || [])]);
 
     return [
         state.documents,
