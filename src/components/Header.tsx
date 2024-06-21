@@ -14,7 +14,7 @@ export const Header: FC<IProps> = (props) => {
             return <></>
         }
         return <>
-            <NavDropdown title={texts.account}>
+            <NavDropdown title={texts.account} menuVariant='right'>
                 <NavDropdown.Item onClick={props.handleLogout}>{texts.logout}</NavDropdown.Item>
             </NavDropdown>
         </>
@@ -23,7 +23,7 @@ export const Header: FC<IProps> = (props) => {
     return (
         <Navbar expand="lg" className="navbar-dark bg-primary">
             <Container>
-                <Link to={'/'}><Navbar.Brand>🎯 {texts.brand}</Navbar.Brand></Link>
+                <Link to={'/'}><Navbar.Brand>🐷 {texts.brand}</Navbar.Brand></Link>
                 {renderItems()}
             </Container>
         </Navbar>

@@ -1,6 +1,6 @@
 export const texts = {
-    brand: "Cool App",
-    description: 'A cool app for cool people.',
+    brand: "Piggy Bank",
+    description: 'Watch Your Pennies Grow!',
 
     defaultError: '💥 Something went boom.',
     defaultSuccess: '🎉 Success!',

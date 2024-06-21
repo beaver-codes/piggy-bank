@@ -29,3 +29,8 @@ html,
 .flex-1 {
     flex: 1;
 }
+
+.dropdown-menu-right {
+    right: 0;
+    left: auto !important;
+}
