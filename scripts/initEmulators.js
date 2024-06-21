@@ -7,7 +7,7 @@ const program = new Command();
 program
     .parse();
 
-const PROJECT_ID = 'test-project';
+const PROJECT_ID = 'tiny-piggy-bank';
 
 const USERS = {
     'schoffer.pavel@gmail.com': { superAdmin: true },

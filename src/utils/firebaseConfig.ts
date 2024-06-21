@@ -1,8 +1,8 @@
 export const firebaseConfig = {
-    apiKey: "AIzaSyBNGS6iXooI7mJEb50iGqQYiZmgPEqTfwI",
-    authDomain: "exercise-planner-2c1bd.firebaseapp.com",
-    projectId: "exercise-planner-2c1bd",
-    storageBucket: "exercise-planner-2c1bd.appspot.com",
-    messagingSenderId: "171980102927",
-    appId: "1:171980102927:web:492b84b12c2c70f16f327a"
-}
+    apiKey: "AIzaSyBqKYdurVcGZmwtsI2gdREWFkzh0JUmTuc",
+    authDomain: "tiny-piggy-bank.firebaseapp.com",
+    projectId: "tiny-piggy-bank",
+    storageBucket: "tiny-piggy-bank.appspot.com",
+    messagingSenderId: "193836666832",
+    appId: "1:193836666832:web:07a2c6e43c402027b9f3d5"
+};
