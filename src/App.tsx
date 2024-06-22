@@ -14,12 +14,12 @@ import { ToastContainer } from 'react-toastify';
 import './styles/App.scss';
 import "bootstrap-icons/font/bootstrap-icons.css"
 import 'react-toastify/dist/ReactToastify.css';
-import { TestPage } from './pages/TestPage';
+import { AccountSettingsPage } from './pages/AccountSettingsPage';
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <PrivateRoute><TestPage /></PrivateRoute>,
+    element: <PrivateRoute><AccountSettingsPage /></PrivateRoute>,
   },
 ]);
 

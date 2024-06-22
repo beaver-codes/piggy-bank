@@ -12,4 +12,6 @@ export enum PATHS {
 
 export enum COLLECTIONS {
     CONFIG = 'config',
+    ACCOUNTS = 'accounts',
+    TRANSACTIONS = 'transactions',
 }

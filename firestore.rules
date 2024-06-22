@@ -9,9 +9,10 @@ service cloud.firestore {
     	return isAuth() && request.auth.token.superAdmin;
     }
 
-    match /test/{eventId} {
-      allow read: if true;
-      allow write: if isSuperAdmin();
+    match /accounts/{accountId} {
+      allow read: if request.auth.uid == request.resource.data.ownerId;
+      allow create: if request.auth.uid == request.resource.data.ownerId;
+      allow write: if  isSuperAdmin();
     }
 
     match /{document=**} {
