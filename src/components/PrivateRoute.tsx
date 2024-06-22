@@ -8,6 +8,7 @@ import { signInWithEmailLink, signOut } from 'firebase/auth';
 import { Header } from './Header';
 import { LoginEmailLinkConfirmPage } from '../pages/LoginEmailLinkConfirmPage';
 import { toast } from 'react-toastify';
+import { AccountProvider } from '../contexts/AccountContext';
 
 interface IProps {
     children: ReactNode
@@ -61,11 +62,13 @@ export const PrivateRoute: FC<IProps> = (props) => {
     }
 
     return (
-        <div>
-            <Header handleLogout={handleLogout} />
-            <Container className='pt-4'>
-                {props.children}
-            </Container>
-        </div>
+        <AccountProvider>
+            <div>
+                <Header handleLogout={handleLogout} />
+                <Container className='pt-4'>
+                    {props.children}
+                </Container>
+            </div>
+        </AccountProvider>
     )
 }

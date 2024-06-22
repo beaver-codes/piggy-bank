@@ -15,12 +15,18 @@ import './styles/App.scss';
 import "bootstrap-icons/font/bootstrap-icons.css"
 import 'react-toastify/dist/ReactToastify.css';
 import { AccountSettingsPage } from './pages/AccountSettingsPage';
+import AccountPage from './pages/AccountPage';
+import { PATHS } from './utils/shared/constants';
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <PrivateRoute><AccountSettingsPage /></PrivateRoute>,
+    element: <PrivateRoute><AccountPage /></PrivateRoute>,
   },
+  {
+    path: PATHS.accountSettings,
+    element: <PrivateRoute><AccountSettingsPage /></PrivateRoute>,
+  }
 ]);
 
 function FirebaseApp() {
@@ -35,10 +41,11 @@ function FirebaseApp() {
 
   return <AuthProvider sdk={auth}>
     <FirestoreProvider sdk={firestore}>
+
       <RouterProvider router={router} />
       <ToastContainer />
     </FirestoreProvider>
-  </AuthProvider>
+  </AuthProvider >
 }
 
 function App() {

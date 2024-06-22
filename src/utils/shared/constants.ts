@@ -7,10 +7,11 @@ export enum LOCAL_STORAGE_KEYS {
 }
 
 export enum PATHS {
-
+    accountSettings = '/account/settings',
 }
 
 export enum COLLECTIONS {
+    USERS = 'users',
     CONFIG = 'config',
     ACCOUNTS = 'accounts',
     TRANSACTIONS = 'transactions',

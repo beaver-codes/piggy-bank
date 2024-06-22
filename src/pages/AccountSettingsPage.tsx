@@ -1,12 +1,13 @@
 import React, { FC } from 'react'
-import { Button, Form } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { useAuth, useFirebaseApp, useFirestore } from 'reactfire';
+import { useAuth, useFirestore } from 'reactfire';
 import { Account } from '../models/shared/Account';
 import { addDoc, collection } from 'firebase/firestore';
 import { COLLECTIONS } from '../utils/shared/constants';
 import { toast } from 'react-toastify';
 import { AdvancedButton } from '../components/AdvancedButton';
+import { useNavigate } from 'react-router-dom';
 
 interface IProps { }
 
@@ -20,7 +21,7 @@ type Inputs = {
 };
 
 export const AccountSettingsPage: FC<IProps> = (props) => {
-    const { register, handleSubmit, watch, formState: { errors } } = useForm<Inputs>({
+    const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({
         defaultValues: {
             name: '',
             currency: 'kr'
@@ -29,6 +30,7 @@ export const AccountSettingsPage: FC<IProps> = (props) => {
     const { currentUser } = useAuth();
     const firestore = useFirestore();
     const [processing, setProcessing] = React.useState(false)
+    const navigate = useNavigate();
 
     const onSubmit: SubmitHandler<Inputs> = async data => {
         setProcessing(true)
@@ -43,6 +45,7 @@ export const AccountSettingsPage: FC<IProps> = (props) => {
         try {
             await addDoc(collection(firestore, COLLECTIONS.ACCOUNTS), newAccount)
             toast.success('Account created')
+            navigate('/')
         } catch (error) {
             console.error(error)
             toast.error('Failed to create account')

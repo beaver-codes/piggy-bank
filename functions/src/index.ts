@@ -1,7 +1,7 @@
 import * as admin from 'firebase-admin';
-import { onRequest } from "firebase-functions/v2/https";
 import { setGlobalOptions } from "firebase-functions/v2/options";
-import { apiWrapper } from "./utils/api";
+import * as v1Functions from "firebase-functions/v1";
+import { COLLECTIONS } from './utils/shared/constants';
 
 admin.initializeApp();
 
@@ -10,8 +10,11 @@ const region = 'europe-west1';
 setGlobalOptions({ region });
 
 
-export const testFunction = onRequest({ region, cors: true }, (_req, _res) => {
-    return apiWrapper(_req, _res, async (req, res) => {
-        res.send({ success: true });
-    });
+// / AUTH TRIGGERS
+
+export const setupNewUser = v1Functions.region(region).auth.user().onCreate(async user => {
+    const { uid, email } = user;
+    await admin.firestore().collection(COLLECTIONS.USERS).doc(uid).set({ uid, email, createdAt: new Date() });
+    v1Functions.logger.info(`New user: ${email} (${uid})`);
 });
+
