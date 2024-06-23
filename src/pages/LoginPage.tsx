@@ -62,8 +62,8 @@ export const LoginPage: FC<IProps> = (props) => {
     return (
 
         <div className='center flex-1'>
-            <div className='d-flex border rounded flex-1 m-3' style={{ minHeight: 600, maxWidth: 1200 }}>
-                <div className='col-md-6 bg-black text-white p-3 d-none d-md-flex justify-content-between'>
+            <div className='d-flex border border-funky flex-1 m-3' style={{ minHeight: 600, maxWidth: 1200 }}>
+                <div className='col-md-6 bg-black text-white p-3 d-none d-md-flex justify-content-between border-funky'>
                     <h3 className='text-white'>{texts.brand}</h3>
 
                     <p className='text-white mt-auto mb-3'>{texts.description}</p>

@@ -23,7 +23,7 @@ export const Header: FC<IProps> = (props) => {
     return (
         <Navbar expand="lg" className="">
             <Container>
-                <Link to={'/'}><Navbar.Brand>🐷 {texts.brand}</Navbar.Brand></Link>
+                <Link to={'/'}><Navbar.Brand>{texts.brand}</Navbar.Brand></Link>
                 {renderItems()}
             </Container>
         </Navbar>
