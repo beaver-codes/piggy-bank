@@ -44,7 +44,7 @@ export const AccountProvider = (props: Props) => {
         }
     }
 
-    if (!accountsLoaded) {
+    if (!accountsLoaded || (accounts.length > 0 && !account)) {
         return <div className="center"><Spinner /></div>
     }
 
