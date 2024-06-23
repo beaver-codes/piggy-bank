@@ -13,6 +13,15 @@ service cloud.firestore {
       allow read: if request.auth.uid == resource.data.ownerId;
       allow create: if request.auth.uid == request.resource.data.ownerId;
       allow write: if  isSuperAdmin();
+
+      function isAccountOwner() {
+        return request.auth.uid ==  get(/databases/$(database)/documents/accounts/$(accountId)).data.ownerId;
+      }
+
+      match /transactions/{transactionId} {
+        allow read: if isAccountOwner();
+        allow write: if isAccountOwner();
+      }
     }
 
     match /{document=**} {
