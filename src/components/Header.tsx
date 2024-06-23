@@ -14,7 +14,7 @@ export const Header: FC<IProps> = (props) => {
             return <></>
         }
         return <>
-            <NavDropdown title={texts.account} menuVariant='right' >
+            <NavDropdown title={'Menu'} menuVariant='right' >
                 <NavDropdown.Item onClick={props.handleLogout}>{texts.logout}</NavDropdown.Item>
             </NavDropdown>
         </>

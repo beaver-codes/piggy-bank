@@ -9,6 +9,11 @@ interface Props {
     onHide: () => void
 }
 
+// interface Input {
+//     amount: number;
+//     description: string
+// }
+
 function NewTransactionModal(props: Props) {
 
     return <Modal show={true} onHide={props.onHide}>
