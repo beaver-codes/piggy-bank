@@ -65,7 +65,7 @@ export const requireAuth = async (request: functions.https.Request): Promise<Req
 }
 
 export const requireMaster = async (request: functions.https.Request) => {
-    const {uid } = await requireAuth(request);
+    const { uid } = await requireAuth(request);
     if (uid !== 'master') {
         throw new Error('auth: Unauthorized');
     }

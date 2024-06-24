@@ -18,7 +18,7 @@ export const processTransaction = async (transaction: Transaction, accountId: st
     await accountRef.update({ balance: updatedBalance });
 
     const transactionUpdate: Partial<Transaction> = {
-        balanceAfter: updatedBalance
+        balanceAfter: updatedBalance,
     }
     await accountRef.collection(COLLECTIONS.TRANSACTIONS).doc(transaction.id || '').update(transactionUpdate);
 }
