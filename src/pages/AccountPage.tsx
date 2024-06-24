@@ -35,6 +35,13 @@ function AccountPage(props: Props) {
         return null;
     }
 
+    const showAllowence = account.allowence && account.nextAllowenceAt;
+    let daysToAllowence = 0;
+    if (account.nextAllowenceAt) {
+        const diff = account.nextAllowenceAt.getTime() - new Date().getTime();
+        daysToAllowence = Math.ceil(diff / (1000 * 60 * 60 * 24));
+    }
+
     return <div>
         <div className='d-flex justify-content-between align-items-start'>
 
@@ -53,9 +60,20 @@ function AccountPage(props: Props) {
 
                         <i className="bi bi-piggy-bank fs-1 text-primary" />
                     </div>
-                    <div>
-                        <label className='fs-7'>Balance</label>
-                        <div className='fs-4'>{formatAmount(account?.balance || 0, account.currency)}</div>
+                    <div className='flex-1 d-flex justify-content-between gap flex-wrap'>
+
+                        <div>
+                            <label className='fs-7'>Balance</label>
+                            <div className='fs-4'>{formatAmount(account?.balance || 0, account.currency)}</div>
+                        </div>
+                        {showAllowence && <div>
+                            <label className='fs-7'>Days to allowence</label>
+                            <div className='fs-4'>{daysToAllowence}</div>
+                        </div>}
+                        {account.interestRate && <div>
+                            <label className='fs-7'>Interest rate</label>
+                            <div className='fs-4'>{account.interestRate}%</div>
+                        </div>}
                     </div>
                 </div>
             </Card.Body>
