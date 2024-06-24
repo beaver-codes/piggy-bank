@@ -8,7 +8,9 @@ export interface Account {
     accruedInterest: number,
 
     allowence: number
-    interstRate: number
+    interestRate: number
 
     createdAt: Date
+    nextAllowenceAt?: Date
+    nextInterestAccrualAt?: Date
 }

@@ -20,7 +20,7 @@ type Inputs = {
     name: string,
     currency: string,
     allowence: number
-    interstRate: number
+    interestRate: number
 };
 
 export const AccountSettingsPage: FC<IProps> = (props) => {
@@ -45,7 +45,7 @@ export const AccountSettingsPage: FC<IProps> = (props) => {
         setValue('name', account.name)
         setValue('currency', account.currency)
         setValue('allowence', account.allowence)
-        setValue('interstRate', account.interstRate)
+        setValue('interestRate', account.interestRate)
     }, [account, setValue])
 
 
@@ -105,7 +105,7 @@ export const AccountSettingsPage: FC<IProps> = (props) => {
                 </Form.Group>
                 <Form.Group className="mb-3" controlId="formBasicPassword">
                     <Form.Label>Interest rate (%)</Form.Label>
-                    <Form.Control type="number" placeholder="Enter rate" {...register("interstRate", { valueAsNumber: true })}
+                    <Form.Control type="number" placeholder="Enter rate" {...register("interestRate", { valueAsNumber: true })}
                         min={0}
                         step={0.01}
                         max={300}

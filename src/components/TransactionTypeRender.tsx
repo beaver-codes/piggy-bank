@@ -9,6 +9,8 @@ interface Props {
 const ICON_NAME: Record<TransactionType, string> = {
     deposit: 'bi-box-arrow-in-up',
     withdraw: 'bi-box-arrow-down',
+    allowence: 'bi-cash',
+    interest: 'bi-currency-exchange',
 }
 
 function TransactionTypeRender(props: Props) {

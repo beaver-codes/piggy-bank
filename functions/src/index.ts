@@ -4,14 +4,30 @@ import * as v1Functions from "firebase-functions/v1";
 import { COLLECTIONS } from './utils/shared/constants';
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import { fromFirebaseDoc } from './utils/shared/firebase';
-import { processTransaction } from './logic';
+import { processAllAccounts, processTransaction } from './logic';
 import { Transaction } from './models/shared/Transaction';
+import { onSchedule } from 'firebase-functions/v2/scheduler'
+import { onRequest } from 'firebase-functions/v2/https';
+import { apiWrapper } from './utils/api';
 
 admin.initializeApp();
 
 const region = 'europe-west1';
 
 setGlobalOptions({ region });
+
+// SCHEDULED TRIGGERS
+
+export const dailyAccountProcessing = onSchedule('every day 04:00', async () => {
+    return processAllAccounts();
+})
+
+export const mockDailyAccountProcessing = onRequest(async (req, res) => {
+    return apiWrapper(req, res, async () => {
+        await processAllAccounts();
+        res.send('ok')
+    });
+});
 
 
 // / AUTH TRIGGERS
