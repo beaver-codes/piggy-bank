@@ -24,7 +24,7 @@ const router = createBrowserRouter([
     element: <PrivateRoute><AccountPage /></PrivateRoute>,
   },
   {
-    path: PATHS.accountSettings,
+    path: PATHS.accountSettings + "/:accountId?",
     element: <PrivateRoute><AccountSettingsPage /></PrivateRoute>,
   }
 ]);

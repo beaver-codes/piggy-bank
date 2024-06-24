@@ -7,5 +7,8 @@ export interface Account {
     balance: number,
     accruedInterest: number,
 
+    allowence: number
+    interstRate: number
+
     createdAt: Date
 }

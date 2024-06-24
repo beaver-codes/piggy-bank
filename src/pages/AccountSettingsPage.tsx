@@ -1,13 +1,14 @@
-import React, { FC } from 'react'
+import React, { FC, useEffect } from 'react'
 import { Form } from 'react-bootstrap';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useAuth, useFirestore } from 'reactfire';
 import { Account } from '../models/shared/Account';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
 import { COLLECTIONS } from '../utils/shared/constants';
 import { toast } from 'react-toastify';
 import { AdvancedButton } from '../components/AdvancedButton';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useFirebaseDoc } from '../hooks/firebaseHooks';
 
 interface IProps { }
 
@@ -18,34 +19,61 @@ interface IProps { }
 type Inputs = {
     name: string,
     currency: string,
+    allowence: number
+    interstRate: number
 };
 
 export const AccountSettingsPage: FC<IProps> = (props) => {
-    const { register, handleSubmit, formState: { errors } } = useForm<Inputs>({
+    const { accountId } = useParams<{ accountId: string }>()
+    const { register, handleSubmit, formState: { errors }, setValue } = useForm<Inputs>({
         defaultValues: {
             name: '',
             currency: 'kr'
         }
     });
+    const [account] = useFirebaseDoc<Account>(`${COLLECTIONS.ACCOUNTS}/${accountId}`)
     const { currentUser } = useAuth();
     const firestore = useFirestore();
     const [processing, setProcessing] = React.useState(false)
     const navigate = useNavigate();
 
+    useEffect(() => {
+        if (!account) {
+            return
+        }
+
+        setValue('name', account.name)
+        setValue('currency', account.currency)
+        setValue('allowence', account.allowence)
+        setValue('interstRate', account.interstRate)
+    }, [account, setValue])
+
+
+
     const onSubmit: SubmitHandler<Inputs> = async data => {
         setProcessing(true)
-        const newAccount: Account = {
+        const accountUpdate = {
             ...data,
-            createdAt: new Date(),
-            ownerId: currentUser?.uid || '',
-            balance: 0,
-            accruedInterest: 0,
         }
 
         try {
-            await addDoc(collection(firestore, COLLECTIONS.ACCOUNTS), newAccount)
-            toast.success('Account created')
-            navigate('/')
+            if (account) {
+                await setDoc(doc(firestore, `${COLLECTIONS.ACCOUNTS}/${accountId}`), accountUpdate, { merge: true });
+                toast.success('Account updated')
+            } else {
+                const newAccount: Account = {
+                    ...accountUpdate,
+                    createdAt: new Date(),
+                    ownerId: currentUser?.uid || '',
+                    balance: 0,
+                    accruedInterest: 0,
+                }
+
+                await addDoc(collection(firestore, COLLECTIONS.ACCOUNTS), newAccount)
+                toast.success('Account created')
+                navigate('/')
+            }
+
         } catch (error) {
             console.error(error)
             toast.error('Failed to create account')
@@ -59,20 +87,38 @@ export const AccountSettingsPage: FC<IProps> = (props) => {
 
     return (
         <div>
-            <h2>New account</h2>
+            <h2>{account ? 'Update account' : 'New account'}</h2>
 
             <Form onSubmit={handleSubmit(onSubmit)}>
                 <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Label>Name</Form.Label>
-                    <Form.Control type="text" placeholder="Enter name" {...register("name", { required: true })} isInvalid={!!errors.name} />
+                    <Form.Control type="text" placeholder="Enter account name" {...register("name", { required: true })} isInvalid={!!errors.name} />
                 </Form.Group>
 
                 <Form.Group className="mb-3" controlId="formBasicPassword">
                     <Form.Label>Currency</Form.Label>
-                    <Form.Control type="text" placeholder="Enter currency" {...register("currency", { required: true })} isInvalid={!!errors.currency} />
+                    <Form.Control type="text" {...register("currency", { required: true })} isInvalid={!!errors.currency} />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="formBasicPassword">
+                    <Form.Label>Monthly allowence</Form.Label>
+                    <Form.Control type="number" placeholder="Enter amount" {...register("allowence", { valueAsNumber: true })} min={0} step={0.01} />
+                </Form.Group>
+                <Form.Group className="mb-3" controlId="formBasicPassword">
+                    <Form.Label>Interest rate (%)</Form.Label>
+                    <Form.Control type="number" placeholder="Enter rate" {...register("interstRate", { valueAsNumber: true })}
+                        min={0}
+                        step={0.01}
+                        max={300}
+                    />
                 </Form.Group>
 
-                <AdvancedButton processing={processing} icon='bi-floppy' type='submit'>Save</AdvancedButton>
+                <div className="d-flex gap">
+
+                    {accountId && <AdvancedButton icon='bi-arrow-left' variant='secondary'
+                        onClick={() => navigate('/')}
+                    >Back</AdvancedButton>}
+                    <AdvancedButton processing={processing} icon='bi-floppy' type='submit'>Save</AdvancedButton>
+                </div>
             </Form>
         </div>
     )

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useAccount } from '../contexts/AccountContext';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { COLLECTIONS, PATHS } from '../utils/shared/constants';
-import { Card } from 'react-bootstrap';
+import { Button, Card } from 'react-bootstrap';
 import { formatAmount } from '../utils/formats';
 import { AdvancedButton } from '../components/AdvancedButton';
 import NewTransactionModal from '../components/NewTransactionModal';
@@ -36,7 +36,15 @@ function AccountPage(props: Props) {
     }
 
     return <div>
-        <h2>{account?.name}</h2>
+        <div className='d-flex justify-content-between align-items-start'>
+
+            <h2>{account?.name}</h2>
+            <Link to={`${PATHS.accountSettings}/${account.id}`}>
+                <Button variant='outline-secondary' size='sm'>
+                    <i className="bi bi-gear" />
+                </Button>
+            </Link>
+        </div>
 
         <Card>
             <Card.Body>
