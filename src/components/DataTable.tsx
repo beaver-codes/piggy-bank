@@ -29,6 +29,12 @@ export function DataTable<T>(props: {
     const visibleColumns = props.columns.filter((col, ix) => !skipColumnsIx.includes(ix))
     const showHeader = !props.title;
 
+    const renderEmptyState = () => {
+        if (props.data.length > 0) {
+            return null;
+        }
+        return <div className='center'>No data</div>
+    }
 
     return <>
         {showHeader && <h2>{props.title}</h2>}
@@ -61,6 +67,7 @@ export function DataTable<T>(props: {
                 </tr>)}
             </tbody>
         </Table>
+        {renderEmptyState()}
     </>
 
 }

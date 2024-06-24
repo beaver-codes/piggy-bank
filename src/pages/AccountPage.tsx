@@ -10,6 +10,7 @@ import { Transaction, TransactionType } from '../models/shared/Transaction';
 import { useFirebaseQuery } from '../hooks/firebaseHooks';
 import { orderBy } from 'firebase/firestore';
 import { DataTable } from '../components/DataTable';
+import TransactionDetails from '../components/TransactionDetails';
 
 
 interface Props { }
@@ -21,6 +22,7 @@ function AccountPage(props: Props) {
     const [transactions] = useFirebaseQuery<Transaction>(`${COLLECTIONS.ACCOUNTS}/${account?.id}/${COLLECTIONS.TRANSACTIONS}`,
         orderBy('createdAt', 'desc')
     )
+    const [showDetailsFor, setShowDetailsFor] = useState<Transaction | null>(null)
 
     useEffect(() => {
         if (account) {
@@ -41,10 +43,10 @@ function AccountPage(props: Props) {
                 <div className='d-flex'>
                     <div className='center mx-5'>
 
-                        <i className="bi bi-piggy-bank fs-1" />
+                        <i className="bi bi-piggy-bank fs-1 text-primary" />
                     </div>
                     <div>
-                        <label >Balance</label>
+                        <label className='fs-7'>Balance</label>
                         <div className='fs-4'>{formatAmount(account?.balance || 0, account.currency)}</div>
                     </div>
                 </div>
@@ -71,6 +73,7 @@ function AccountPage(props: Props) {
 
         <DataTable
             data={transactions}
+            onRowClick={t => setShowDetailsFor(t)}
             columns={[
                 { label: 'Date', render: t => t.createdAt.toLocaleDateString() },
                 {
@@ -81,6 +84,10 @@ function AccountPage(props: Props) {
 
             ]}
         />
+
+        <TransactionDetails transaction={showDetailsFor} onHide={() => { setShowDetailsFor(null) }} currency={account.currency} />
     </div>
 }
+
 export default AccountPage;
+

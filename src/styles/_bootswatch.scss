@@ -5,12 +5,13 @@
 // Variables
 
 $web-font-path: "https://fonts.googleapis.com/css?family=Neucha|Cabin+Sketch&display=swap" !default;
+
 @if $web-font-path {
   @import url("#{$web-font-path}");
 }
 
 // stylelint-disable scss/dollar-variable-default
-$border-radius-sketchy:    255px 25px 225px 25px / 25px 225px 25px 255px;
+$border-radius-sketchy: 255px 25px 225px 25px / 25px 225px 25px 255px;
 $border-radius-lg-sketchy: 55px 225px 15px 25px / 25px 25px 35px 355px;
 $border-radius-sm-sketchy: 255px 25px 225px 25px / 25px 225px 25px 255px;
 // style-enable scss/dollar-variable-default
@@ -21,6 +22,7 @@ $border-radius-sm-sketchy: 255px 25px 225px 25px / 25px 225px 25px 255px;
   border-style: solid;
   border-width: 2px;
   border-radius: 25px 25px 55px 5px/5px 55px 25px 25px;
+  border-color: $primary;
 
   &.bg-light {
     border-color: $gray-800;
@@ -85,6 +87,7 @@ blockquote {
 // Tables
 
 table {
+
   th,
   td {
     background-color: $white;
@@ -105,6 +108,7 @@ table {
 
   .table-success,
   .table-success:hover {
+
     td,
     th {
       color: $white;
@@ -114,6 +118,7 @@ table {
 
   .table-info,
   .table-info:hover {
+
     td,
     th {
       color: $white;
@@ -123,6 +128,7 @@ table {
 
   .table-warning,
   .table-warning:hover {
+
     td,
     th {
       color: $white;
@@ -132,6 +138,7 @@ table {
 
   .table-danger,
   .table-danger:hover {
+
     td,
     th {
       color: $white;
@@ -141,10 +148,11 @@ table {
 }
 
 .table-dark {
+
   th,
   td,
-  &.table-hover .table-active:hover > th,
-  &.table-hover .table-active:hover > td {
+  &.table-hover .table-active:hover>th,
+  &.table-hover .table-active:hover>td {
     background-color: $gray-800;
   }
 }
@@ -392,6 +400,7 @@ select.form-control {
   border-radius: 5px 5px 5px 5px/25px 25px 25px 5px;
 
   &-outline {
+
     &-primary,
     &-success,
     &-info,

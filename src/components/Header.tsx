@@ -21,9 +21,9 @@ export const Header: FC<IProps> = (props) => {
     }
 
     return (
-        <Navbar expand="lg" className="">
+        <Navbar expand="lg" className="text-primary">
             <Container>
-                <Link to={'/'}><Navbar.Brand>{texts.brand}</Navbar.Brand></Link>
+                <Link to={'/'}><Navbar.Brand className="text-primary">{texts.brand}</Navbar.Brand></Link>
                 {renderItems()}
             </Container>
         </Navbar>
