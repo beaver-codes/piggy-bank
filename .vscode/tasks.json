@@ -14,6 +14,12 @@
 			"problemMatcher": []
 		},
 		{
+			"type": "shell",
+			"label": "Frontend-prod",
+			"command": "npm run start",
+			"problemMatcher": []
+		},
+		{
 			"type": "npm",
 			"path": "functions",
 			"script": "build:watch",

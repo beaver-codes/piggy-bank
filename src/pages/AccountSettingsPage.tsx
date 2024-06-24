@@ -28,7 +28,9 @@ export const AccountSettingsPage: FC<IProps> = (props) => {
     const { register, handleSubmit, formState: { errors }, setValue } = useForm<Inputs>({
         defaultValues: {
             name: '',
-            currency: 'kr'
+            currency: 'kr',
+            allowence: 0,
+            interestRate: 0
         }
     });
     const [account] = useFirebaseDoc<Account>(`${COLLECTIONS.ACCOUNTS}/${accountId}`)
@@ -44,8 +46,8 @@ export const AccountSettingsPage: FC<IProps> = (props) => {
 
         setValue('name', account.name)
         setValue('currency', account.currency)
-        setValue('allowence', account.allowence)
-        setValue('interestRate', account.interestRate)
+        setValue('allowence', account.allowence || 0)
+        setValue('interestRate', account.interestRate || 0)
     }, [account, setValue])
 
 
@@ -57,7 +59,7 @@ export const AccountSettingsPage: FC<IProps> = (props) => {
         }
 
         try {
-            if (account) {
+            if (accountId) {
                 await setDoc(doc(firestore, `${COLLECTIONS.ACCOUNTS}/${accountId}`), accountUpdate, { merge: true });
                 toast.success('Account updated')
             } else {

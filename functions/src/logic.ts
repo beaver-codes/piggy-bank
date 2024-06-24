@@ -59,7 +59,8 @@ const processAccountInterestPayout = async (account: Account, currentAccruedInte
     const newBalance = account.balance + payoutAmount;
     const newAccrualBalance = currentAccruedInterest - payoutAmount;
 
-    logger.info(`Paying out interest ${payoutAmount} to account ${account.id}, new balance: ${newBalance}, new accrual balance: ${newAccrualBalance}`);
+    logger.info(`Paying out interest ${payoutAmount} to account ${account.id}, new balance: ${newBalance},
+         new accrual balance: ${newAccrualBalance}`);
     const newTransaction: Transaction = {
         amount: payoutAmount,
         type: 'interest',
@@ -105,7 +106,10 @@ const processAccountInterestAccrual = async (account: Account, currentBalance: n
         interestIncrementDaily,
         newAccrualBalance: newAccrualBalance,
     });
-    await admin.firestore().doc(`${COLLECTIONS.ACCOUNTS}/${account.id}`).update({ nextInterestAccrualAt: newAccrualDate, accruedInterest: newAccrualBalance });
+    await admin.firestore().doc(`${COLLECTIONS.ACCOUNTS}/${account.id}`).update({
+        nextInterestAccrualAt: newAccrualDate,
+        accruedInterest: newAccrualBalance,
+    });
     return newAccrualBalance;
 }
 

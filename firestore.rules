@@ -12,7 +12,7 @@ service cloud.firestore {
     match /accounts/{accountId} {
       allow read: if request.auth.uid == resource.data.ownerId;
       allow create: if request.auth.uid == request.resource.data.ownerId;
-      allow write: if  isSuperAdmin();
+      allow write: if  request.auth.uid == resource.data.ownerId;
 
       function isAccountOwner() {
         return request.auth.uid ==  get(/databases/$(database)/documents/accounts/$(accountId)).data.ownerId;
