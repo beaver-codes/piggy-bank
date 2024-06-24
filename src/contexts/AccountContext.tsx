@@ -29,27 +29,21 @@ export const AccountProvider = (props: Props) => {
         queryConstraints: [where('ownerId', '==', currentUser?.uid)],
         skip: !currentUser
     })
-    const [account, setAccount] = useState<Account | null>(null)
+    const [accountId, setAccountId] = useState<string>('')
 
     useEffect(() => {
-        if (accountsLoaded && accounts.length > 0 && !account) {
-            setAccount(accounts[0])
+        if (accountsLoaded && accounts.length > 0 && !accountId) {
+            setAccountId(accounts[0].id || '')
         }
-    }, [accountsLoaded, accounts, account, setAccount])
+    }, [accountsLoaded, accounts, accountId, setAccountId])
 
-    const changeSelectedAccount = (accountId: string) => {
-        const account = accounts.find(a => a.id === accountId)
-        if (account) {
-            setAccount(account)
-        }
-    }
-
+    const account = accounts.find(a => a.id === accountId) || null
     if (!accountsLoaded || (accounts.length > 0 && !account)) {
         return <div className="center"><Spinner /></div>
     }
 
     return (
-        <accountContext.Provider value={{ account: account, allAccounts: accounts, setSelectedAccount: changeSelectedAccount }}>
+        <accountContext.Provider value={{ account: account, allAccounts: accounts, setSelectedAccount: setAccountId }}>
             {props.children}
         </accountContext.Provider>
     )

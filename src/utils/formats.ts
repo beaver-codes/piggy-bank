@@ -3,10 +3,6 @@ export const formatAmount = (input: string | number | null | undefined, currency
     return limitDecimals(value) + ' ' + currency;
 }
 
-export const decimalFormatter = new Intl.NumberFormat("en-us", {
-    style: "decimal",
-    minimumSignificantDigits: 1,
-    maximumSignificantDigits: 4,
-});
+export const decimalFormatter = new Intl.NumberFormat();
 
-export const limitDecimals = (value: number) => decimalFormatter.format(value);
+export const limitDecimals = (value: number) => decimalFormatter.format(value).replaceAll(',', ' ');

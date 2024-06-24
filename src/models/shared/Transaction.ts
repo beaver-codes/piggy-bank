@@ -7,5 +7,5 @@ export interface Transaction {
     createdAt: Date
 }
 
-export type TransactionType = 'withdraw' | 'insert'
+export type TransactionType = 'withdraw' | 'deposit' | 'interest';
 

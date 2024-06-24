@@ -27,8 +27,12 @@ function NewTransactionModal(props: Props) {
 
     const onSubmit = async (data: Inputs) => {
         setProcessing(true)
+
+        const amount = props.operation === 'withdraw' ? -data.amount : data.amount
+
         const newTransaction: Transaction = {
             ...data,
+            amount,
             type: props.operation,
             createdAt: new Date(),
         }

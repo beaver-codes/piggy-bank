@@ -40,7 +40,6 @@ export const useFirebaseQueryOptions = <T>(path: string, options: QueryOptions):
     const firestore = useFirestore();
 
     useEffect(() => {
-        console.log('refetching')
         if (options.skip) {
             return;
         }
