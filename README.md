@@ -6,10 +6,13 @@ Live Demo: https://bank.beaver.codes/
 
 See More: https://beaver.codes/piggy-bank/
 
+<!-- image -->
+![Piggy Bank](./public/ScreenComputer.png)
+
 
 ## Contribution
 
-Contribution is very welcome. 
+Contribution is very welcome!
 
 TODOs to grab:
 - CONTRIBUTION.md - with steps on how to setup local dev
