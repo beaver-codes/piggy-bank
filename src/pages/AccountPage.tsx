@@ -11,6 +11,7 @@ import { useFirebaseQuery } from '../hooks/firebaseHooks';
 import { orderBy } from 'firebase/firestore';
 import { DataTable } from '../components/DataTable';
 import TransactionDetails from '../components/TransactionDetails';
+import TransactionTypeRender from '../components/TransactionTypeRender';
 
 
 interface Props { }
@@ -102,6 +103,10 @@ function AccountPage(props: Props) {
             onRowClick={t => setShowDetailsFor(t)}
             columns={[
                 { label: 'Date', render: t => t.createdAt.toLocaleDateString() },
+                {
+                    label: 'Type',
+                    render: t => <TransactionTypeRender transaction={t} />
+                },
                 {
                     label: 'Amount', align: 'right', render: t => <span className={t.amount > 0 ? 'text-success' : ''}>
                         {formatAmount(t.amount, account.currency)}

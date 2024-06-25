@@ -16,3 +16,5 @@ export enum COLLECTIONS {
     ACCOUNTS = 'accounts',
     TRANSACTIONS = 'transactions',
 }
+
+export const SUPPORT_EMAIL = 'support@beaver.codes';
