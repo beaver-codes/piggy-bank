@@ -9,25 +9,9 @@ program
 
 const PROJECT_ID = 'tiny-piggy-bank';
 
-const USERS = {
-    'schoffer.pavel@gmail.com': { superAdmin: true },
-}
 
 const CONFIG_PRIVATE = {
     frontendUrl: 'http://localhost:3000',
-}
-
-const initAuth = async () => {
-    const auth = admin.auth();
-    const allusers = (await auth.listUsers()).users;
-
-    for (const email of Object.keys(USERS)) {
-        if (!allusers.find(userObj => userObj.email === email)) {
-            console.log('creating user', email);
-            const newUser = await auth.createUser({ email, password: 'testtest' });
-            auth.setCustomUserClaims(newUser.uid, USERS[email]);
-        }
-    }
 }
 
 const initDB = async () => {
@@ -44,8 +28,6 @@ const main = async () => {
     admin.initializeApp({ projectId: PROJECT_ID });
 
     await initDB()
-
-    await initAuth();
 }
 
 main();

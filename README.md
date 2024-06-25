@@ -1,35 +1,18 @@
-# Template
+# Piggy Bank
 
-* Clone code:
-```
-git clone git@github.com:beaver-codes/template.git cool-project
-```
+Virtual bank for kids
 
-* Change remote
-```
-git remote remove origin
-git remote add origin <new-origin>
-```
+Live Demo: https://bank.beaver.codes/
 
-* Create Firebase project
+See More: https://beaver.codes/piggy-bank/
 
-* Add Web App (with Hosting)
 
-* Add Firestore
+## Contribution
 
-* Add Auth (you might need to add Google Auth too so you can in Project Settings change public facing name)
+Contribution is very welcome. 
 
-* Upgrade to Blaze plan
-
-* Change [index.htlm](./public/index.html)
-
-* Change [manifest.json](./public/manifest.json)
- 
-* Firebase init (choose hosting, and as website folder - `build`) 
-```
-firebase init
-```
-
-* Update project id in [initEmulators.js](./scripts/initEmulators.js)
-
-* Update [firebaseConfig.ts](./src/utils/firebaseConfig.ts)
+TODOs to grab:
+- CONTRIBUTION.md - with steps on how to setup local dev
+- Support multiple accounts per user
+- Sharing accounts among users
+- Saving goals
