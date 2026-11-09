@@ -10,17 +10,29 @@ export const processTransaction = async (transaction: Transaction, accountId: st
     logger.info(`Processing transaction: ${transaction.id} in account ${accountId}`);
 
     const accountRef = admin.firestore().doc(`${COLLECTIONS.ACCOUNTS}/${accountId}`);
-    const accountSnap = await accountRef.get();
-    const account = fromFirebaseDoc<Account>(accountSnap);
+    const transactionRef = accountRef.collection(COLLECTIONS.TRANSACTIONS).doc(transaction.id || '');
 
-    const updatedBalance = account.balance + transaction.amount;
+    // Run as a Firestore transaction so concurrent triggers (e.g. allowance + interest
+    // created in the same daily run) can't read the same balance and overwrite each other.
+    await admin.firestore().runTransaction(async tx => {
+        const transactionSnap = await tx.get(transactionRef);
+        // Firestore triggers are at-least-once; don't apply the same transaction twice.
+        if (transactionSnap.get('balanceAfter') !== undefined) {
+            logger.info(`Transaction ${transaction.id} already processed, skipping`);
+            return;
+        }
 
-    await accountRef.update({ balance: updatedBalance });
+        const accountSnap = await tx.get(accountRef);
+        const account = fromFirebaseDoc<Account>(accountSnap);
 
-    const transactionUpdate: Partial<Transaction> = {
-        balanceAfter: updatedBalance,
-    }
-    await accountRef.collection(COLLECTIONS.TRANSACTIONS).doc(transaction.id || '').update(transactionUpdate);
+        const updatedBalance = roundCents((account.balance || 0) + transaction.amount);
+
+        tx.update(accountRef, { balance: updatedBalance });
+        const transactionUpdate: Partial<Transaction> = {
+            balanceAfter: updatedBalance,
+        };
+        tx.update(transactionRef, transactionUpdate);
+    });
 }
 
 
@@ -43,42 +55,59 @@ const processAccount = async (account: Account) => {
     await processAccountInterestPayout(account, newAccrualBalance);
 }
 
-const MIN_INTEREST_ACCRUAL = 0.01;
+// Money is stored as decimal numbers, so round to whole cents to avoid float drift
+// (e.g. 0.1 + 0.2 = 0.30000000000000004).
+const roundCents = (value: number) => Math.round(value * 100) / 100;
+
 const processAccountInterestPayout = async (account: Account, currentAccruedInterest: number): Promise<void> => {
-    if (!currentAccruedInterest) {
-        logger.info(`Account ${account.id} has no accrued interest, skipping`);
+    const accountRef = admin.firestore().doc(`${COLLECTIONS.ACCOUNTS}/${account.id}`);
+    const newPayoutDate = getFistDayOfNextMonth();
+
+    if (!account.nextInterestPayoutAt) {
+        logger.info(`Account ${account.id} has no next interest payout date, setting and skipping`);
+        await accountRef.update({ nextInterestPayoutAt: newPayoutDate });
         return;
     }
 
-    const payoutAmount = Math.floor(currentAccruedInterest / MIN_INTEREST_ACCRUAL) * MIN_INTEREST_ACCRUAL;
-    if (payoutAmount < MIN_INTEREST_ACCRUAL) {
-        logger.info(`Account ${account.id} accrued interest is less than minimum payout, skipping`);
+    if (new Date() < account.nextInterestPayoutAt) {
+        logger.info(`Account ${account.id} has not reached next interest payout date, skipping`);
         return;
     }
 
-    const newBalance = account.balance + payoutAmount;
-    const newAccrualBalance = currentAccruedInterest - payoutAmount;
+    // Pay out whole cents only; the fraction stays accrued for next month.
+    // Work in integer cents (rounded to kill float noise like 28.999999999999996) before flooring.
+    const accruedCents = Math.round((currentAccruedInterest || 0) * 1e6) / 1e4;
+    const payoutAmount = Math.floor(accruedCents) / 100;
+    const newAccrualBalance = Math.max(0, (currentAccruedInterest || 0) - payoutAmount);
 
-    logger.info(`Paying out interest ${payoutAmount} to account ${account.id}, new balance: ${newBalance},
-         new accrual balance: ${newAccrualBalance}`);
+    if (payoutAmount <= 0) {
+        logger.info(`Account ${account.id} accrued interest is less than minimum payout, moving payout to next month`);
+        await accountRef.update({ nextInterestPayoutAt: newPayoutDate });
+        return;
+    }
+
+    logger.info(`Paying out interest ${payoutAmount} to account ${account.id}, new accrual balance: ${newAccrualBalance}`);
     const newTransaction: Transaction = {
         amount: payoutAmount,
         type: 'interest',
-        description: 'Interest payout',
+        description: 'Monthly interest payout',
         createdAt: new Date(),
     }
-    await admin.firestore().doc(`${COLLECTIONS.ACCOUNTS}/${account.id}`).collection(COLLECTIONS.TRANSACTIONS).add(newTransaction);
-    await admin.firestore().doc(`${COLLECTIONS.ACCOUNTS}/${account.id}`).update({ accruedInterest: newAccrualBalance });
+    await accountRef.collection(COLLECTIONS.TRANSACTIONS).add(newTransaction);
+    await accountRef.update({
+        accruedInterest: newAccrualBalance,
+        nextInterestPayoutAt: newPayoutDate,
+    });
 }
 
 const processAccountInterestAccrual = async (account: Account, currentBalance: number): Promise<number> => {
     if (!account.interestRate) {
         logger.info(`Account ${account.id} has no interest rate, skipping`);
-        return account.accruedInterest;
+        return account.accruedInterest || 0;
     }
     if (currentBalance <= 0) {
         logger.info(`Account ${account.id} has no balance, skipping`);
-        return account.accruedInterest;
+        return account.accruedInterest || 0;
     }
 
     const newAccrualDate = new Date();
@@ -87,17 +116,17 @@ const processAccountInterestAccrual = async (account: Account, currentBalance: n
     if (!account.nextInterestAccrualAt) {
         logger.info(`Account ${account.id} has no next interest accrual date, setting and skipping`);
         await admin.firestore().doc(`${COLLECTIONS.ACCOUNTS}/${account.id}`).update({ nextInterestAccrualAt: newAccrualDate });
-        return account.accruedInterest;
+        return account.accruedInterest || 0;
     }
 
     if (new Date() < account.nextInterestAccrualAt) {
         logger.info(`Account ${account.id} has not reached next interest accrual date, skipping`);
-        return account.accruedInterest;
+        return account.accruedInterest || 0;
     }
 
     const interestIncrementYearly = currentBalance * (account.interestRate / 100);
     const interestIncrementDaily = interestIncrementYearly / 365;
-    const newAccrualBalance = account.accruedInterest + interestIncrementDaily;
+    const newAccrualBalance = (account.accruedInterest || 0) + interestIncrementDaily;
 
     logger.info(`Adding interest ${interestIncrementDaily} to account ${account.id}, new accrual balance: ${newAccrualBalance}`, {
         balance: currentBalance,
@@ -148,8 +177,9 @@ const processAccountAllowence = async (account: Account): Promise<number> => {
 
 const getFistDayOfNextMonth = () => {
     const newDate = new Date();
-    newDate.setMonth(newDate.getMonth() + 1);
+    // Set the day first: on Jan 31, setMonth(+1) would overflow to March.
     newDate.setDate(1);
+    newDate.setMonth(newDate.getMonth() + 1);
     newDate.setHours(0, 0, 0, 0);
     return newDate;
 }

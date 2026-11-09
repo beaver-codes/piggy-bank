@@ -36,12 +36,36 @@ function AccountPage(props: Props) {
         return null;
     }
 
-    const showAllowence = account.allowence && account.nextAllowenceAt;
-    let daysToAllowence = 0;
-    if (account.nextAllowenceAt) {
-        const diff = account.nextAllowenceAt.getTime() - new Date().getTime();
-        daysToAllowence = Math.ceil(diff / (1000 * 60 * 60 * 24));
-    }
+    const DAY_MS = 1000 * 60 * 60 * 24;
+    const now = new Date();
+    const daysUntil = (date: Date) => Math.max(0, Math.ceil((date.getTime() - now.getTime()) / DAY_MS));
+    const firstOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const formatWhen = (date: Date) => {
+        const days = daysUntil(date);
+        const when = days === 0 ? 'today' : days === 1 ? 'tomorrow' : `in ${days} days`;
+        return `${when} · ${date.toLocaleDateString()}`;
+    };
+
+    const showAllowence = !!account.allowence && !!account.nextAllowenceAt;
+
+    // Interest accrues once per day on the balance and is paid out (whole cents) on the 1st.
+    // Estimate = already accrued + daily interest for each accrual left up to and including payout day.
+    const showInterest = !!account.interestRate;
+    const nextInterestPayoutAt = account.nextInterestPayoutAt || firstOfNextMonth;
+    const nextAccrualAt = account.nextInterestAccrualAt || new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    const accrualsLeft = Math.max(0, Math.round((nextInterestPayoutAt.getTime() - nextAccrualAt.getTime()) / DAY_MS) + 1);
+    const dailyInterest = account.balance > 0 ? account.balance * (account.interestRate / 100) / 365 : 0;
+    const estimatedInterest = Math.floor(Math.round(((account.accruedInterest || 0) + dailyInterest * accrualsLeft) * 1e6) / 1e4) / 100;
+
+    // Balance after each transaction. Uses the stored balanceAfter when present; for older
+    // transactions without it, derive it by walking back from the current balance
+    // (transactions are sorted newest first).
+    let runningBalance = account.balance || 0;
+    const transactionsWithBalance: Transaction[] = transactions.map(t => {
+        const balanceAfter = t.balanceAfter ?? runningBalance;
+        runningBalance = balanceAfter - t.amount;
+        return { ...t, balanceAfter };
+    });
 
     return <div>
         <div className='d-flex justify-content-between align-items-start'>
@@ -68,12 +92,15 @@ function AccountPage(props: Props) {
                             <div className='fs-4'>{formatAmount(account?.balance || 0, account.currency)}</div>
                         </div>
                         {showAllowence && <div>
-                            <label className='fs-7'>Days to allowence</label>
-                            <div className='fs-4'>{daysToAllowence}</div>
+                            <label className='fs-7'>Next allowence</label>
+                            <div className='fs-4'>{formatAmount(account.allowence, account.currency)}</div>
+                            <div className='fs-7'>{formatWhen(account.nextAllowenceAt!)}</div>
                         </div>}
-                        {account.interestRate && <div>
-                            <label className='fs-7'>Interest rate</label>
-                            <div className='fs-4'>{account.interestRate}%</div>
+                        {showInterest && <div>
+                            <label className='fs-7'>Next interest ({account.interestRate}% p.a.)</label>
+                            <div className='fs-4'>≈ {formatAmount(estimatedInterest, account.currency)}</div>
+                            <div className='fs-7'>{formatWhen(nextInterestPayoutAt)}</div>
+                            <div className='fs-7'>{formatAmount(account.accruedInterest || 0, account.currency)} earned so far</div>
                         </div>}
                     </div>
                 </div>
@@ -99,7 +126,7 @@ function AccountPage(props: Props) {
 
 
         <DataTable
-            data={transactions}
+            data={transactionsWithBalance}
             onRowClick={t => setShowDetailsFor(t)}
             columns={[
                 { label: 'Date', render: t => t.createdAt.toLocaleDateString() },

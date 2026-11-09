@@ -13,4 +13,5 @@ export interface Account {
     createdAt: Date
     nextAllowenceAt?: Date
     nextInterestAccrualAt?: Date
+    nextInterestPayoutAt?: Date
 }
